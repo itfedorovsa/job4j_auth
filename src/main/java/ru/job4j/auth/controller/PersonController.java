@@ -9,8 +9,6 @@ import ru.job4j.auth.repository.PersonRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Person controller
@@ -20,7 +18,7 @@ import java.util.stream.StreamSupport;
  * @since 16.03.23
  */
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/persons")
 @AllArgsConstructor
 public class PersonController {
 

@@ -1,5 +1,6 @@
 package ru.job4j.auth.controller;
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,7 @@ public class PersonController {
 
     @PostMapping("/")
     public ResponseEntity<Person> create(@RequestBody Person person) {
+    validatePerson(person, "Creation failed: ");
         return new ResponseEntity<>(
                 this.persons.save(person),
                 HttpStatus.CREATED
@@ -48,6 +50,7 @@ public class PersonController {
 
     @PutMapping("/")
     public ResponseEntity<Void> update(@RequestBody Person person) {
+        validatePerson(person, "Update failed: ");
         this.persons.save(person);
         return ResponseEntity.ok().build();
     }
@@ -58,6 +61,12 @@ public class PersonController {
         person.setId(id);
         this.persons.delete(person);
         return ResponseEntity.ok().build();
+    }
+
+    private void validatePerson(Person person, @NotNull String methodTypeMsg) {
+        if (person == null || person.getUsername() == null || person.getPassword() == null) {
+            throw new NullPointerException(methodTypeMsg + "Username or password could not be empty");
+        }
     }
 
 }

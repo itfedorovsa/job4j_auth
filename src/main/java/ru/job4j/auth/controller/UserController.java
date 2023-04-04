@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.auth.model.Person;
@@ -37,7 +38,7 @@ public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class.getSimpleName());
 
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody Person person) {
+    public ResponseEntity<Person> signUp(@RequestBody Person person) {
         String username = person.getUsername();
         String password = person.getPassword();
         if (username == null || password == null) {
@@ -48,11 +49,17 @@ public class UserController {
         }
         person.setPassword(encoder.encode(password));
         users.save(person);
+        return new ResponseEntity<>(
+                users.save(person),
+                HttpStatus.CREATED
+        );
     }
 
     @GetMapping("/all")
-    public List<Person> findAll() {
-        return users.findAll();
+    public ResponseEntity<?> findAll1() {
+        List<Person> result = users.findAll();
+        return !result.isEmpty()
+                ? new ResponseEntity<>(result, HttpStatus.OK) : new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})

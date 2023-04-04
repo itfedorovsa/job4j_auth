@@ -1,6 +1,7 @@
 package ru.job4j.auth.repository;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import ru.job4j.auth.model.Person;
 
@@ -26,8 +27,9 @@ public class UserStore {
      *
      * @param person Person
      */
-    public void save(Person person) {
+    public Person save(Person person) {
         users.put(person.getUsername(), person);
+        return person;
     }
 
     /**

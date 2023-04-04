@@ -25,9 +25,11 @@ public class PersonController {
 
     private final PersonRepository persons;
 
-    @GetMapping("/")
-    public List<Person> findAll() {
-        return this.persons.findAll();
+    @GetMapping("/findAll")
+    public ResponseEntity<?> findAll() {
+        List<Person> result = persons.findAll();
+        return !result.isEmpty()
+                ? new ResponseEntity<>(result, HttpStatus.OK) : new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{id}")
@@ -41,7 +43,7 @@ public class PersonController {
 
     @PostMapping("/")
     public ResponseEntity<Person> create(@RequestBody Person person) {
-    validatePerson(person, "Creation failed: ");
+        validatePerson(person, "Creation failed: ");
         return new ResponseEntity<>(
                 this.persons.save(person),
                 HttpStatus.CREATED

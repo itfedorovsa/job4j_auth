@@ -1,13 +1,15 @@
 package ru.job4j.auth.controller;
 
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.auth.model.Person;
 import ru.job4j.auth.repository.PersonRepository;
+import ru.job4j.auth.validation.Operation;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,8 +44,8 @@ public class PersonController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
-        validatePerson(person, "Creation failed: ");
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Person> create(@Valid @RequestBody Person person) {
         return new ResponseEntity<>(
                 this.persons.save(person),
                 HttpStatus.CREATED
@@ -51,8 +53,8 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
-        validatePerson(person, "Update failed: ");
+    @Validated(Operation.OnUpdate.class)
+    public ResponseEntity<Void> update(@Valid @RequestBody Person person) {
         this.persons.save(person);
         return ResponseEntity.ok().build();
     }
@@ -63,12 +65,6 @@ public class PersonController {
         person.setId(id);
         this.persons.delete(person);
         return ResponseEntity.ok().build();
-    }
-
-    private void validatePerson(Person person, @NotNull String methodTypeMsg) {
-        if (person == null || person.getUsername() == null || person.getPassword() == null) {
-            throw new NullPointerException(methodTypeMsg + "Username or password could not be empty");
-        }
     }
 
 }

@@ -7,12 +7,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.auth.model.Person;
 import ru.job4j.auth.repository.UserStore;
+import ru.job4j.auth.validation.Operation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +41,8 @@ public class UserController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class.getSimpleName());
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Person> signUp(@RequestBody Person person) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Person> signUp(@Valid @RequestBody Person person) {
         String username = person.getUsername();
         String password = person.getPassword();
         if (username == null || password == null) {
@@ -56,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> findAll1() {
+    public ResponseEntity<?> findAll() {
         List<Person> result = users.findAll();
         return !result.isEmpty()
                 ? new ResponseEntity<>(result, HttpStatus.OK) : new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
